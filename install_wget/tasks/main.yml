@@ -1,0 +1,35 @@
+---
+- name: Check if the wget.exe exists
+  win_stat: 
+    path: C:\Program Files (x86)\GnuWin32\bin\wget.exe 
+  register: stat_file
+
+- name: Create build directory
+  win_file:
+    path: C:\Users\Administrator\Desktop\wget_install
+    state: directory
+  when: stat_file.stat.exists == False
+
+- name: Download the wget package
+  win_get_url:
+    url: http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-setup.exe
+    dest: C:\Users\Administrator\Desktop\wget_install\
+  when: stat_file.stat.exists == False
+
+- name: Copy wget install script file to machine
+  win_copy:
+    src:  install_wget.ps1
+    dest: C:\Users\Administrator\Desktop\wget_install\install_wget.ps1
+  when: stat_file.stat.exists == False
+
+- name: Run script install wget and to set wget path
+  win_shell: .\install_wget.ps1
+  args:
+    chdir: C:\Users\Administrator\Desktop\wget_install\
+  when: stat_file.stat.exists == False
+
+- name: Remove build directory
+  win_file:
+    path: C:\Users\Administrator\Desktop\wget_install\
+    state: absent
+  when: stat_file.stat.exists == False

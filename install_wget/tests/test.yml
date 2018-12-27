@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  remote_user: 
+  roles:
+    - install_wget
